@@ -40,7 +40,8 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 </div>
 <div id="team" style="position:fixed;left:12px;top:calc(96px + env(safe-area-inset-top,0px));width:130px;font-size:11px;pointer-events:none;text-shadow:0 1px 3px #000"></div>
 <div id="ring"><div id="knob"></div></div>
-<div id="ov"><h1 id="ot">狩猟クエスト</h1><p id="od">太刀を手に、モンスターを制限時間4分で討伐せよ。<br>赤い範囲は攻撃の予告。回避、または納刀（U）で攻撃を引きつけ、当たる瞬間にもう一度Uで居合カウンター！<br>飛翔斬（R）は居合カウンター成功時に1回だけ使える必殺技。敵へ突進し、当たると跳び上がって空中から大斬り！ジャンプ中は敵の地上攻撃をかわせる。<br>頭・尻尾・脚を攻め続ければ部位破壊。</p><p style="opacity:.7;font-size:13px">移動 WASD／左スティック　視点 ←→／ドラッグ<br>攻撃 J・Space　回避 K・Shift　回復 L・E　飛翔斬 R（居合成功時のみ）　納刀 U・C（納刀中にもう一度で居合）</p><div id="qs"></div>
+<div id="ov"><h1 id="ot">狩猟クエスト</h1><p id="od">太刀を手に、モンスターを制限時間4分で討伐せよ。<br>赤い範囲は攻撃の予告。回避、または納刀（U）で攻撃を引きつけ、当たる瞬間にもう一度Uで居合カウンター！<br>飛翔斬（R）は居合カウンター成功時に1回だけ使える必殺技。敵へ突進し、当たると跳び上がって空中から大斬り！ジャンプ中は敵の地上攻撃をかわせる。<br>頭・尻尾・脚を攻め続ければ部位破壊。</p><p style="opacity:.7;font-size:13px">移動 WASD／左スティック　視点 ←→／ドラッグ<br>攻撃 J・Space　回避 K・Shift　回復 L・E　飛翔斬 R（居合成功時のみ）　納刀 U・C（納刀中にもう一度で居合）</p><div style="font-weight:800;margin:6px 0 2px">⚔ クエストを選んで開始 <span style="font-weight:500;font-size:12px;opacity:.8">（そのままひとりで遊べます）</span></div>
+<div id="qs"></div>
 <div id="mp" style="margin-top:10px"><div style="font-weight:800;margin-bottom:4px">🌐 オンライン協力（最大4人）</div>
 <div id="mpbtns"><button class="q" id="mpHost" style="background:#2fa8b8">部屋を作る（ホスト）</button>
 <div style="display:flex;gap:6px;width:min(88vw,380px);margin:5px auto"><input id="mpCode" maxlength="4" placeholder="部屋コード" style="flex:1;padding:10px;font-size:16px;border-radius:6px;border:0;text-transform:uppercase;text-align:center"><button class="q" id="mpJoin" style="margin:0;width:auto;background:#2fa8b8">参加</button></div></div>
@@ -373,11 +374,17 @@ addEventListener("resize",resize);resize();
 // ================= オンライン協力（WebRTC / PeerJS・サーバー不要） =================
 // ★ 回線の相性で直接つながらない場合の「中継サーバー(TURN)」を使う設定。自分用のTURNを取得したら ICE_EXTRA に追記してください。
 // 例: {urls:"turn:example.com:3478",username:"user",credential:"pass"}
-const ICE_EXTRA=[];
+const ICE_EXTRA=[{"urls": "stun:stun.relay.metered.ca:80"}, {"urls": "turn:global.relay.metered.ca:80", "username": "7e1f0ff0a030a20b113ba8b7", "credential": "QSi4nxYi7dC99q2/"}, {"urls": "turn:global.relay.metered.ca:80?transport=tcp", "username": "7e1f0ff0a030a20b113ba8b7", "credential": "QSi4nxYi7dC99q2/"}, {"urls": "turn:global.relay.metered.ca:443", "username": "7e1f0ff0a030a20b113ba8b7", "credential": "QSi4nxYi7dC99q2/"}, {"urls": "turns:global.relay.metered.ca:443?transport=tcp", "username": "7e1f0ff0a030a20b113ba8b7", "credential": "QSi4nxYi7dC99q2/"}];
 const PEER_OPTS={config:{iceServers:[{urls:"stun:stun.l.google.com:19302"},{urls:"stun:stun1.l.google.com:19302"},{urls:"stun:global.stun.twilio.com:3478"},
  {urls:"turn:openrelay.metered.ca:80",username:"openrelayproject",credential:"openrelayproject"},
  {urls:"turn:openrelay.metered.ca:443",username:"openrelayproject",credential:"openrelayproject"},
  {urls:"turns:openrelay.metered.ca:443?transport=tcp",username:"openrelayproject",credential:"openrelayproject"},...ICE_EXTRA]}};
+// ★ 自分用のTURN（無料の中継サーバー）を使うとき：ここにURLを貼ります（手順は説明を参照）。
+// 例: "https://アプリ名.metered.live/api/v1/turn/credentials?apiKey=キー"
+const TURN_API="";
+let ICE_CACHE=null;
+function loadIce(cb){if(!TURN_API||ICE_CACHE)return cb();
+ fetch(TURN_API).then(r=>r.json()).then(list=>{if(!Array.isArray(list))throw 0;ICE_CACHE={config:{iceServers:[...PEER_OPTS.config.iceServers.filter(x=>String(x.urls).startsWith("stun")),...list]}}}).catch(()=>{ICE_CACHE=PEER_OPTS}).then(cb)}
 const NET={to:0,on:false,host:false,id:0,peer:null,conns:[],hc:null,others:{},nid:1,code:"",acc:0,th:0};
 const AV=[0x4a7fc1,0xc14a4a,0x4ac17f,0xc1a64a],r2=v=>Math.round(v*100)/100;
 function netSend(o){if(NET.host)NET.conns.forEach(c=>c.open&&c.send(o));else if(NET.hc&&NET.hc.open)NET.hc.send(o)}
@@ -418,9 +425,9 @@ function clientRecv(d){if(!d||typeof d!=="object")return;
  else if(d.t==="hurt"&&S.run){const p=S.p,h0=p.hp;hurt(+d.d||0,!!d.proj);if(d.ps&&p.hp<h0){p.psn=6;note("毒！")}}
  else if(d.t==="end"&&S.run)end(d.r);
  else if(d.t==="left")dropOther(d.id)}
-function hostOpen(){const code=Array.from({length:4},()=>"ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.random()*32|0]).join("");
+function hostOpen(){if(TURN_API&&!ICE_CACHE){$("mpmsg").textContent="準備中…";return loadIce(hostOpen)}const code=Array.from({length:4},()=>"ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.random()*32|0]).join("");
  $("mpmsg").textContent="部屋を作っています…";
- const peer=new Peer("kg3d-"+code,PEER_OPTS);NET.peer=peer;clearTimeout(NET.to);NET.to=setTimeout(()=>{if(!NET.on)netErr({type:"server-error"})},12000);
+ const peer=new Peer("kg3d-"+code,ICE_CACHE||PEER_OPTS);NET.peer=peer;clearTimeout(NET.to);NET.to=setTimeout(()=>{if(!NET.on)netErr({type:"server-error"})},12000);
  peer.on("open",()=>{clearTimeout(NET.to);NET.on=true;NET.host=true;NET.id=0;NET.code=code;netUI()});
  peer.on("error",e=>{if(e.type==="unavailable-id"){peer.destroy();hostOpen()}else netErr(e)});
  peer.on("connection",c=>{
@@ -428,8 +435,8 @@ function hostOpen(){const code=Array.from({length:4},()=>"ABCDEFGHJKLMNPQRSTUVWX
    c.pid=NET.nid++;NET.conns.push(c);c.send({t:"welcome",id:c.pid,q:Q,run:S.run});netUI()});
   c.on("data",d=>hostRecv(c,d));
   c.on("close",()=>{if(!NET.conns.includes(c))return;NET.conns=NET.conns.filter(x=>x!==c);dropOther(c.pid);netSend({t:"left",id:c.pid});netUI()})})}
-function joinRoom(code){code=(code||"").trim().toUpperCase();if(code.length!==4){$("mpmsg").textContent="4文字の部屋コードを入力してください";return}
- $("mpmsg").textContent="接続中…";const peer=new Peer(undefined,PEER_OPTS);NET.peer=peer;clearTimeout(NET.to);NET.to=setTimeout(()=>{if(!NET.on)netErr({type:"timeout"})},20000);
+function joinRoom(code){if(TURN_API&&!ICE_CACHE){$("mpmsg").textContent="準備中…";return loadIce(()=>joinRoom(code))}code=(code||"").trim().toUpperCase();if(code.length!==4){$("mpmsg").textContent="4文字の部屋コードを入力してください";return}
+ $("mpmsg").textContent="接続中…";const peer=new Peer(undefined,ICE_CACHE||PEER_OPTS);NET.peer=peer;clearTimeout(NET.to);NET.to=setTimeout(()=>{if(!NET.on)netErr({type:"timeout"})},20000);
  peer.on("open",()=>{const c=peer.connect("kg3d-"+code,{serialization:"json",reliable:true});NET.hc=c;
   c.on("open",()=>{clearTimeout(NET.to);NET.on=true;NET.host=false;NET.code=code;netUI()});setTimeout(()=>{try{c.peerConnection.addEventListener("iceconnectionstatechange",()=>{if(c.peerConnection.iceConnectionState==="failed"&&!NET.on)netErr({type:"ice-failed"})})}catch(e){}},0);
   c.on("data",clientRecv);c.on("close",()=>{if(NET.on)netErr({type:"closed"})});c.on("error",e=>netErr(e))});
