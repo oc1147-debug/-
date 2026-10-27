@@ -28,13 +28,6 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 #pbars{display:flex;gap:8px;margin-top:5px;font-size:11px;text-shadow:0 1px 3px #000}#pbars>div{flex:1}#pbars .bar{height:6px;margin-top:2px}
 #note{position:fixed;top:28%;left:0;right:0;text-align:center;font-size:30px;font-weight:800;color:var(--gold);text-shadow:0 2px 8px #000;opacity:0;transition:opacity .3s;pointer-events:none}
 #flash{position:fixed;inset:0;background:rgba(200,20,20,.45);opacity:0;pointer-events:none;transition:opacity .25s}
-#online{width:min(92vw,420px);padding:12px;border:1px solid #e0b85888;border-radius:8px;background:#17100ddd;}
-#online button,#online input{font:inherit;border-radius:5px;padding:10px;border:1px solid #c7a65c;width:100%;margin:4px 0}
-#online button{background:#e0b858;color:#120708;font-weight:bold;cursor:pointer}
-#online input{background:#fff;color:#222;user-select:text}
-#netstatus{font-size:13px;line-height:1.5;overflow-wrap:anywhere;margin:5px 0;color:#c9e8ff}
-#roomrow{display:flex;gap:6px}#roomrow input{flex:1;min-width:0}#roomrow button{width:100px}
-#qs{display:none;width:min(92vw,420px)}
 </style>
 </head>
 <body>
@@ -45,16 +38,15 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
   <div class="me"><div class="bar"><i id="hb" style="background:var(--grn)"></i></div><div class="bar" style="height:7px"><i id="sb" style="background:var(--yel)"></i></div></div>
   <div class="btns"><button id="bl" style="background:#2fa8b8;padding:10px 0">飛翔斬</button><button id="bp">回復薬 ×3</button><button id="bc" style="background:var(--gold)">見切り</button><button id="br">回避</button><button id="atk">攻撃</button></div>
 </div>
+<div id="team" style="position:fixed;left:12px;top:calc(96px + env(safe-area-inset-top,0px));width:130px;font-size:11px;pointer-events:none;text-shadow:0 1px 3px #000"></div>
 <div id="ring"><div id="knob"></div></div>
-<div id="ov"><h1 id="ot">狩猟クエスト</h1><p id="od">太刀を手に、モンスターを制限時間4分で討伐せよ。<br>赤い範囲は攻撃の予告。回避、または納刀（U）で攻撃を引きつけ、当たる瞬間にもう一度Uで居合カウンター！<br>飛翔斬（R）は居合カウンター成功時に1回だけ使える必殺技。敵へ突進し、当たると跳び上がって空中から大斬り！ジャンプ中は敵の地上攻撃をかわせる。<br>頭・尻尾・脚を攻め続ければ部位破壊。</p><p style="opacity:.7;font-size:13px">移動 WASD／左スティック　視点 ←→／ドラッグ<br>攻撃 J・Space　回避 K・Shift　回復 L・E　飛翔斬 R（居合成功時のみ）　納刀 U・C（納刀中にもう一度で居合）</p><div id="online">
- <button id="createRoom">部屋を作る（ホスト）</button>
- <p style="font-size:12px;margin:4px 0">部屋を作った人に表示される部屋IDを友達に送ってね。</p>
- <div id="roomrow"><input id="roomCode" placeholder="友達の部屋ID" autocomplete="off"><button id="joinRoom">参加する</button></div>
- <div id="netstatus">未接続：部屋を作るか、友達の部屋IDを入力してください。</div>
- <button id="copyRoom" style="display:none">部屋IDをコピー</button>
-</div><div id="qs"></div></div>
+<div id="ov"><h1 id="ot">狩猟クエスト</h1><p id="od">太刀を手に、モンスターを制限時間4分で討伐せよ。<br>赤い範囲は攻撃の予告。回避、または納刀（U）で攻撃を引きつけ、当たる瞬間にもう一度Uで居合カウンター！<br>飛翔斬（R）は居合カウンター成功時に1回だけ使える必殺技。敵へ突進し、当たると跳び上がって空中から大斬り！ジャンプ中は敵の地上攻撃をかわせる。<br>頭・尻尾・脚を攻め続ければ部位破壊。</p><p style="opacity:.7;font-size:13px">移動 WASD／左スティック　視点 ←→／ドラッグ<br>攻撃 J・Space　回避 K・Shift　回復 L・E　飛翔斬 R（居合成功時のみ）　納刀 U・C（納刀中にもう一度で居合）</p><div id="qs"></div>
+<div id="mp" style="margin-top:10px"><div style="font-weight:800;margin-bottom:4px">🌐 オンライン協力（最大4人）</div>
+<div id="mpbtns"><button class="q" id="mpHost" style="background:#2fa8b8">部屋を作る（ホスト）</button>
+<div style="display:flex;gap:6px;width:min(88vw,380px);margin:5px auto"><input id="mpCode" maxlength="4" placeholder="部屋コード" style="flex:1;padding:10px;font-size:16px;border-radius:6px;border:0;text-transform:uppercase;text-align:center"><button class="q" id="mpJoin" style="margin:0;width:auto;background:#2fa8b8">参加</button></div></div>
+<p id="mpmsg" style="font-size:13px;opacity:.9;margin-top:4px"></p><button class="q" id="mpLeave" style="display:none;width:auto;background:#555;color:#fff;margin:4px auto">退出</button></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script>
 const $=id=>document.getElementById(id),T=THREE;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),dist=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z),ang=(a,b)=>Math.atan2(b.z-a.z,b.x-a.x);
@@ -118,32 +110,39 @@ const trail=new T.Mesh(new T.RingGeometry(1.4,3.8,28,1,0,.9),trM);trail.rotation
 const scb=new T.Mesh(new T.BoxGeometry(3.7,.32,.2),mat(0x4a1a22));scb.position.set(-2.04,1.16,-.35);scb.rotation.z=.5;pm.add(scb);
 const streakM=new T.MeshBasicMaterial({color:0x9ffff0,transparent:true,opacity:0,depthWrite:false}),streak=new T.Mesh(new T.BoxGeometry(1,.06,.35),streakM);sc.add(streak);
 pm.add(swordG);sc.add(pm);
-// ---- オンライン相手の表示（通信相手の位置を受信して描画） ----
-const remote=new T.Group();
-const remoteBody=new T.Mesh(new T.CylinderGeometry(.4,.45,1.3,12),new T.MeshLambertMaterial({color:0x54d8a8}));remoteBody.position.y=.85;remote.add(remoteBody);
-const remoteHead=new T.Mesh(new T.SphereGeometry(.35,12,12),new T.MeshLambertMaterial({color:0xf0d2ad}));remoteHead.position.y=1.8;remote.add(remoteHead);remote.visible=false;sc.add(remote);
-let peer=null,conn=null,netRole="",lastNetSend=0,remoteData=null,roomId="";
-function netStatus(t){$("netstatus").textContent=t}
-function setConnected(c,role){conn=c;netRole=role;$("createRoom").disabled=true;$("joinRoom").disabled=true;$("roomCode").disabled=true;$("copyRoom").style.display=role==="host"?"block":"none";$("qs").style.display="block";netStatus("接続済み！ 相手のキャラクターが表示されます。※この試作版では、モンスターの体力・攻撃・勝敗はまだ共有されません。");
- c.on("data",d=>{if(!d||typeof d!=="object")return;if(d.type==="state"&&typeof d.x==="number"){remoteData=d;remote.visible=true}});
- c.on("close",()=>{conn=null;remote.visible=false;netStatus("相手との接続が切れました。ページを再読み込みして、もう一度部屋を作るか参加してください。");});
- c.on("error",e=>netStatus("通信エラー: "+(e.message||"接続を確認してください")));
-}
-function makePeer(){return new Promise((resolve,reject)=>{let settled=false;let timer=setTimeout(()=>{if(!settled){settled=true;try{peer&&peer.destroy()}catch(_){}reject(new Error("接続サーバーから12秒以内に返事がありません。インターネット接続、VPN・広告ブロック、学校/会社のネットワーク制限を確認してください。"))}},12000);try{if(typeof Peer==="undefined")throw new Error("通信ライブラリを読み込めませんでした。ページを再読み込みするか、別のブラウザで試してください。");peer=new Peer();peer.on("open",id=>{if(settled)return;settled=true;clearTimeout(timer);resolve(id)});peer.on("error",e=>{if(!settled){settled=true;clearTimeout(timer);reject(new Error((e&&e.type?e.type+": ":"")+(e&&e.message?e.message:"通信サーバーに接続できませんでした。")))}});peer.on("connection",c=>{if(conn){c.close();return}c.on("open",()=>setConnected(c,"host"))})}catch(e){clearTimeout(timer);reject(e)}})}
-$("createRoom").onclick=async()=>{$("createRoom").disabled=true;netStatus("通信サーバーに接続しています…（最大12秒）");try{roomId=await makePeer();$("roomCode").value=roomId;$("copyRoom").style.display="block";netStatus("部屋を作りました！ この部屋IDを友達に送ってください: "+roomId+"。友達が参加するまでこの画面を開いたままにしてね。");}catch(e){$("createRoom").disabled=false;netStatus("部屋を作れませんでした。"+e.message+" ページを再読み込みして再試行してください。");}}
-$("joinRoom").onclick=async()=>{const id=$("roomCode").value.trim();if(!id){netStatus("友達から受け取った部屋IDを入力してください。");return}$("joinRoom").disabled=true;netStatus("通信サーバーに接続しています…（最大12秒）");try{await makePeer();netStatus("部屋に接続しています…");conn=peer.connect(id,{reliable:true});let timer=setTimeout(()=>{if(!conn||!conn.open){netStatus("部屋に接続できませんでした。部屋IDが正しいか、ホストがページを開いたままか確認してください。");$("joinRoom").disabled=false}},12000);conn.on("open",()=>{clearTimeout(timer);setConnected(conn,"guest")});conn.on("error",e=>{clearTimeout(timer);netStatus("部屋に接続できませんでした。部屋IDとホストの接続状態を確認してください。");$("joinRoom").disabled=false});}catch(e){$("joinRoom").disabled=false;netStatus("接続できませんでした。"+e.message+" ページを再読み込みして再試行してください。");}}
-$("copyRoom").onclick=()=>{const v=$("roomCode").value;if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(v).then(()=>netStatus("部屋IDをコピーしました: "+v)).catch(()=>netStatus("部屋ID: "+v));else netStatus("部屋ID: "+v+"（選択してコピーしてください）")}
-
 // ---- モンスター（飛竜型・オリジナル）：鱗テクスチャ・しなる首/尻尾・開閉する顎 ----
 function tex(draw,rx,ry){const c=document.createElement("canvas");c.width=c.height=256;draw(c.getContext("2d"));const t=new T.CanvasTexture(c);t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(rx,ry);return t}
-const scaleTex=tex(g=>{g.fillStyle="#d4d4d4";g.fillRect(0,0,256,256);g.strokeStyle="#808080";g.lineWidth=2;for(let y=0;y<256;y+=16)for(let x=-((y/16)%2)*8;x<256;x+=16){g.beginPath();g.arc(x+8,y,9,0,Math.PI);g.stroke()}},5,3);
-const veinTex=tex(g=>{g.fillStyle="#e6e6e6";g.fillRect(0,0,256,256);g.strokeStyle="#7a7a7a";g.lineWidth=3;for(let i=0;i<7;i++){g.beginPath();g.moveTo(0,128);g.quadraticCurveTo(110,i*36,256,i*42);g.stroke()}},1,1);
-const mm=new T.Group(),bodyMat=new T.MeshPhongMaterial({color:0xa8431f,map:scaleTex,shininess:22,specular:0x332a22}),bellyM=new T.MeshPhongMaterial({color:0xd8a070,map:scaleTex,shininess:10}),wingMat=new T.MeshLambertMaterial({color:0x6a2a12,map:veinTex,side:T.DoubleSide}),accM=new T.MeshPhongMaterial({color:0x2a1a14,shininess:40}),horn=new T.MeshPhongMaterial({color:0xf0e0b0,shininess:30}),eyeM=new T.MeshBasicMaterial({color:0xffd24a}),mouthM=new T.MeshBasicMaterial({color:0xff6a1a});
+function bigTex(fn,sz){const c=document.createElement("canvas");c.width=c.height=sz;fn(c.getContext("2d"),sz);const t=new T.CanvasTexture(c);t.wrapS=t.wrapT=T.RepeatWrapping;return t}
+const speck=(g,s,n,a1,a2)=>{for(let i=0;i<n;i++){g.fillStyle=Math.random()<.5?`rgba(0,0,0,${a1})`:`rgba(255,255,255,${a2})`;g.fillRect(Math.random()*s,Math.random()*s,1.5,1.5)}};
+// 体表：重なり合う鱗＋風化斑＋擦過傷（グレー基調で体色染色に対応）
+const scaleTex=bigTex((g,s)=>{g.fillStyle="#cccccc";g.fillRect(0,0,s,s);
+ const w=24,h=16;for(let y=0;y<s+h;y+=h)for(let x=-((y/h|0)%2)*w/2;x<s+w;x+=w){const v=196+((x*7+y*13)%3)*13+Math.random()*20;
+  const r=g.createRadialGradient(x+w/2,y+2,1,x+w/2,y+2,w*.62);r.addColorStop(0,`rgb(${v+26|0},${v+24|0},${v+20|0})`);r.addColorStop(.72,`rgb(${v|0},${v-4|0},${v-9|0})`);r.addColorStop(1,"rgb(94,92,90)");
+  g.fillStyle=r;g.beginPath();g.moveTo(x,y);g.lineTo(x+w,y);g.arc(x+w/2,y,w/2,0,Math.PI);g.closePath();g.fill()}
+ for(let i=0;i<10;i++){const px=Math.random()*s,py=Math.random()*s,pr=20+Math.random()*45;const rg=g.createRadialGradient(px,py,0,px,py,pr);rg.addColorStop(0,"rgba(30,26,24,.15)");rg.addColorStop(1,"rgba(30,26,24,0)");g.fillStyle=rg;g.beginPath();g.arc(px,py,pr,0,7);g.fill()}
+ g.strokeStyle="rgba(70,64,60,.3)";for(let i=0;i<14;i++){g.lineWidth=.8+Math.random();const sx=Math.random()*s,sy=Math.random()*s,a=Math.random()*6.28,L=10+Math.random()*30;g.beginPath();g.moveTo(sx,sy);g.lineTo(sx+Math.cos(a)*L,sy+Math.sin(a)*L);g.stroke()}
+ speck(g,s,1400,.07,.05)},512);
+scaleTex.repeat.set(4,2.5);
+// 腹部：横じまの柔らかい革皮膚
+const bellyTex=bigTex((g,s)=>{g.fillStyle="#e0e0e0";g.fillRect(0,0,s,s);
+ for(let y=0;y<s;y+=13){g.strokeStyle="rgba(118,110,102,.4)";g.lineWidth=2+Math.random();g.beginPath();for(let x=0;x<=s;x+=16)g.lineTo(x,y+Math.sin(x/34+y)*2.4);g.stroke()}
+ speck(g,s,900,.05,.06)},512);
+bellyTex.repeat.set(3,2);
+// 翼膜：暗褐色の革＋骨に沿うベージュの放射条＋斑ノイズ
+const wingTex=bigTex((g,s)=>{const gr=g.createLinearGradient(0,0,0,s);gr.addColorStop(0,"#56422f");gr.addColorStop(.5,"#3a2b20");gr.addColorStop(1,"#2a1e16");g.fillStyle=gr;g.fillRect(0,0,s,s);
+ const root=[.48*s,(1-.78)*s],tips=[[.88,.7],[.84,.367],[.56,.067],[.1,.267],[.35,.5]].map(([u,v])=>[u*s,(1-v)*s]);
+ tips.forEach(([tx,ty],i)=>{g.lineCap="round";g.strokeStyle=i<4?"rgba(206,182,138,.8)":"rgba(206,182,138,.4)";g.lineWidth=i<4?22:34;g.beginPath();g.moveTo(root[0],root[1]);g.lineTo(tx,ty);g.stroke();g.strokeStyle="rgba(240,224,188,.45)";g.lineWidth=8;g.stroke()});
+ for(let i=0;i<70;i++){const px=Math.random()*s,py=Math.random()*s,pr=6+Math.random()*22;g.fillStyle=Math.random()<.6?"rgba(16,10,6,.18)":"rgba(210,190,150,.08)";g.beginPath();g.arc(px,py,pr,0,7);g.fill()}
+ speck(g,s,1200,.08,.04)},512);
+const mm=new T.Group(),bodyMat=new T.MeshPhongMaterial({color:0xa8431f,map:scaleTex,bumpMap:scaleTex,bumpScale:.05,shininess:16,specular:0x554433}),bellyM=new T.MeshPhongMaterial({color:0xd8a070,map:bellyTex,bumpMap:bellyTex,bumpScale:.035,shininess:8,specular:0x333028}),wingMat=new T.MeshLambertMaterial({color:0xffffff,map:wingTex,side:T.DoubleSide}),accM=new T.MeshPhongMaterial({color:0x2a1a14,shininess:40}),clawM=new T.MeshPhongMaterial({color:0x191310,shininess:70,specular:0x777777}),horn=new T.MeshPhongMaterial({color:0xf0e0b0,shininess:30}),eyeM=new T.MeshBasicMaterial({color:0xffd24a}),mouthM=new T.MeshBasicMaterial({color:0xff6a1a});
 const add=(g,m,x,y,z,par)=>{const o=new T.Mesh(g,m);o.position.set(x,y,z);(par||mm).add(o);return o};
 const bone=(par,a,b,r,m)=>{const d=new T.Vector3().subVectors(b,a),o=new T.Mesh(new T.CylinderGeometry(r*.7,r,d.length(),6),m);o.position.copy(a).addScaledVector(d,.5);o.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),d.clone().normalize());par.add(o)};
 const body=add(new T.SphereGeometry(1,28,20),bodyMat,0,2.4,0);body.scale.set(2.7,1.5,1.4);
 const belly=add(new T.SphereGeometry(1,24,16),bellyM,.1,1.95,0);belly.scale.set(2.5,1.15,1.3);
 for(let i=0;i<9;i++){const x=2.1-i*.65;add(new T.ConeGeometry(.17+.03*(i%2),.7+.15*(i%3),6),accM,x,2.4+1.5*Math.sqrt(1-(x/2.7)**2)-.1,0)}
+// 胸筋・翼付け根の肩の隆起
+[[.7,-.85],[.7,.85]].forEach(([x,z])=>{const c=add(new T.SphereGeometry(.85,16,12),bodyMat,x,2.45,z);c.scale.set(1.15,.72,.9)});
+[[.95],[-.95]].forEach(([z])=>add(new T.SphereGeometry(.6,14,10),bodyMat,.8,3.5,z).scale.set(1,.85,.9));
 // 首（曲線上の球でなめらかに）
 const neckSegs=[];for(let i=0;i<9;i++){const t=i/8,u=1-t,x=u*u*2+2*u*t*3.3+t*t*3.9,y=u*u*2.8+2*u*t*3+t*t*4.2,o=add(new T.SphereGeometry(1,14,10),bodyMat,x,y,0);const r=.85-.4*t;o.scale.set(r*1.3,r,r);o.userData.y0=y;neckSegs.push(o)}
 // 眼（スリット瞳・虹彩・ハイライト・まぶた・発光）
@@ -178,8 +177,9 @@ const hornsA=[];
 const wings=[];
 function mkWing(sg){const g=new T.Group();g.position.set(.8,3.5,sg*.9);g.scale.z=sg;mm.add(g);
  const V=a=>new T.Vector3(...a),S0=V([0,0,0]),Wr=V([-.3,1.8,2.4]),t1=V([-.8,3.4,4.4]),t2=V([-2.8,3,4.2]),t3=V([-4.6,2,2.8]),B=V([-3.4,-.2,.5]);
- const pts=[Wr,t1,t2,Wr,t2,t3,Wr,t3,B,Wr,B,S0].flatMap(v=>[v.x,v.y,v.z]),uv=[];
- for(let i=0;i<pts.length;i+=3)uv.push(clamp(pts[i+2]/5,0,1),clamp((pts[i]+5)/6,0,1));
+ const eP=[t1];[[t1,t2],[t2,t3],[t3,B],[B,S0]].forEach(([a,b])=>{[.3,.55,.8].forEach(k=>{const p=a.clone().lerp(b,k).lerp(Wr,.06+Math.random()*.14);p.z+=(Math.random()-.5)*.35;eP.push(p)});eP.push(b)});
+ const pts=[],uv=[];const psh=v=>{pts.push(v.x,v.y,v.z);uv.push(clamp(v.z/5,0,1),clamp((v.x+5)/6,0,1))};
+ for(let i=0;i<eP.length-1;i++){psh(Wr);psh(eP[i]);psh(eP[i+1])}
  const geo=new T.BufferGeometry();geo.setAttribute("position",new T.Float32BufferAttribute(pts,3));geo.setAttribute("uv",new T.Float32BufferAttribute(uv,2));geo.computeVertexNormals();
  g.add(new T.Mesh(geo,wingMat));
  [[S0,Wr,.17],[Wr,t1,.1],[Wr,t2,.09],[Wr,t3,.09]].forEach(([a,b,r])=>bone(g,a,b,r,accM));
@@ -189,7 +189,7 @@ mkWing(1);mkWing(-1);
 const legsA=[];[[1.4,.95,.7],[1.4,-.95,.7],[-1.1,1.15,1],[-1.1,-1.15,1]].forEach(([x,z,k])=>{const g=new T.Group();g.position.set(x,0,z);g.scale.set(k,k,k);mm.add(g);
  add(new T.SphereGeometry(.55,12,10),bodyMat,0,1.5,0,g).scale.set(1,1.25,.9);
  bone(g,new T.Vector3(0,1.4,0),new T.Vector3(.35,.35,0),.28,bodyMat);
- [-.18,0,.18].forEach(zz=>add(new T.ConeGeometry(.08,.5,5),horn,.62,.12,zz,g).rotation.z=-1.57);
+ [-.18,0,.18].forEach(zz=>add(new T.ConeGeometry(.08,.5,5),clawM,.62,.12,zz,g).rotation.z=-1.57);
  legsA.push(g)});
 // 尻尾（しなる・先端に棘）
 const tail=new T.Group();tail.position.set(-2.4,2.2,0);mm.add(tail);
@@ -235,29 +235,29 @@ function reset(q){Q=q;const D=MON[q],f=D.hp/800,P0=(h)=>({hp:h*f,mx:h*f,br:false
  S={t:240,run:false,
  p:{x:-12,z:0,a:0,hp:100,st:100,pot:3,atk:0,dur:.34,hit:false,roll:0,rx:1,rz:0,inv:0,r:.5,cs:0,cc:0,cb:0,cbt:0,psn:0,sh:0,iw:0,dash:0,d0:1,stk:0,dx:0,dz:0,dsx:0,dsz:0,da:0,lg:0,lgok:false,lgx:0,lgz:0,lghit:false,jp:0,jt:0,jy:0,js:false,jsx:0,jsz:0,ltx:0,ltz:0,lgr:0},
  m:{x:10,z:0,a:Math.PI,hp:D.hp,max:D.hp,atk:null,ti:1.4,fl:0,r:2.5*D.sc,stun:0,y:0,fz:0,pt:{H:P0(150),T:P0(120),L:P0(180)},D}};
- balls.forEach(b=>sc.remove(b.g));balls.length=0;cy=0;$("bp").textContent="回復薬 ×3";bodyMat.color.setHex(D.c);wingMat.color.setHex(D.c).multiplyScalar(.6);bellyM.color.setHex(D.c).lerp(new T.Color(0xffffff),.45);mm.scale.setScalar(D.sc);hornsA.forEach(h=>h.visible=true);tail.visible=true;legsA.forEach(l=>l.scale.y=1)}
+ balls.forEach(b=>sc.remove(b.g));balls.length=0;cy=0;$("bp").textContent="回復薬 ×3";bodyMat.color.setHex(D.c);wingMat.color.setHex(D.c).lerp(new T.Color(0xffffff),.55);bellyM.color.setHex(D.c).lerp(new T.Color(0xffffff),.45);mm.scale.setScalar(D.sc);hornsA.forEach(h=>h.visible=true);tail.visible=true;legsA.forEach(l=>l.scale.y=1)}
 reset(0);
 function note(t){const n=$("note");n.textContent=t;n.style.opacity=1;setTimeout(()=>n.style.opacity=0,1100)}
 function flash2(){const f=$("flash");f.style.background="rgba(230,190,70,.45)";f.style.opacity=1;setTimeout(()=>{f.style.opacity=0;f.style.background="rgba(200,20,20,.45)"},150)}
 function zone(){const m=S.m,p=S.p,a=adiff(ang(m,p),m.a);return a<1?"H":a>2.1?"T":"L"}
-function hitM(d,zn){const m=S.m,pt=m.pt[zn];m.hp-=Math.round(d*(zn==="H"?1.2:zn==="T"?1:.9));m.fl=.12;pt.hp-=d;
+function hitM(d,zn){const m=S.m,pt=m.pt[zn];if(NET.on&&!NET.host){netSend({t:"hit",d,zn});m.fl=.12;return}m.hp-=Math.round(d*(zn==="H"?1.2:zn==="T"?1:.9));m.fl=.12;pt.hp-=d;
  if(!pt.br&&pt.hp<=0){pt.br=true;m.stun=2.2;m.atk=null;note("部位破壊！ "+{H:"頭",T:"尻尾",L:"脚"}[zn]);
   if(zn==="H")hornsA.forEach(h=>h.visible=false);if(zn==="T")tail.visible=false;if(zn==="L")legsA.forEach(l=>l.scale.y=.6)}
  if(m.hp<=0){m.hp=0;end("win")}}
 function counter(){const p=S.p,m=S.m;p.cs=0;p.iw=0;p.sh=0;p.cc=.4;p.inv=1;p.a=ang(p,m);p.dx=Math.cos(p.a);p.dz=Math.sin(p.a);p.da=p.a;p.dsx=p.x;p.dsz=p.z;
- p.dash=p.d0=clamp((dist(p,m)-m.r-1.4)/45,.06,.3);m.atk=null;m.ti=1.4;m.stun=Math.max(m.stun,1.8);p.lgok=true;flash2();note("居合！ 飛翔斬り使用可")}
+ p.dash=p.d0=clamp((dist(p,m)-m.r-1.4)/45,.06,.3);stunM(1.8,true,1.4);p.lgok=true;flash2();note("居合！ 飛翔斬り使用可")}
 function iai(){const p=S.p,m=S.m;p.atk=.34;p.dur=.34;p.cb=3;p.hit=true;p.inv=Math.max(p.inv,.3);
  if(dist(p,m)<m.r+4.5&&m.y<2){hitM(70,zone());note("見切り斬り！");flash2()}else note("空振り…")}
 function flash(){const f=$("flash");f.style.opacity=1;setTimeout(()=>f.style.opacity=0,120)}
-function hurt(d,proj){const p=S.p;if(p.inv>0)return;if(p.jy>1.2&&!proj)return;d=Math.round(d*S.m.D.dm);if(p.iw>0&&!proj)return counter();p.hp-=d;p.inv=.6;p.cs=0;p.iw=0;flash();if(p.hp<=0)end("lose")}
-function end(r){S.run=false;S.p.jp=0;S.p.jy=0;S.p.lg=0;$("ot").textContent=r==="win"?"狩猟成功！":"クエスト失敗…";$("od").innerHTML=r==="win"?`残り ${Math.ceil(S.t)} 秒でした`:"体力が尽きたか、時間切れです";$("ov").style.display="flex"}
+function hurt(d,proj){const p=S.p;if(p.inv>0)return;if(p.jy>1.2&&!proj)return;d=Math.round(d*S.m.D.dm);if(p.iw>0&&!proj)return counter();p.hp-=d;p.inv=.6;p.cs=0;p.iw=0;flash();if(p.hp<=0){if(NET.on){p.hp=0;note("戦闘不能… 仲間に任せよう")}else end("lose")}}
+function end(r){if(NET.on&&NET.host&&S.run)netSend({t:"end",r});S.run=false;S.p.jp=0;S.p.jy=0;S.p.lg=0;$("ot").textContent=r==="win"?"狩猟成功！":"クエスト失敗…";$("od").innerHTML=r==="win"?`残り ${Math.ceil(S.t)} 秒でした`:"体力が尽きたか、時間切れです";$("ov").style.display="flex"}
 function update(dt){
- const p=S.p,m=S.m,rage=m.hp<m.max*.4;S.t-=dt;if(S.t<=0)return end("lose");
+ const p=S.p,m=S.m,rage=m.hp<m.max*.4;S.t-=dt;if(S.t<=0&&!(NET.on&&!NET.host))return end("lose");
  if(keys.ArrowLeft)cy-=1.8*dt;if(keys.ArrowRight)cy+=1.8*dt;
- let ix=(keys.d?1:0)-(keys.a?1:0),iy=(keys.w?1:0)-(keys.s?1:0);if(stick){ix+=stick.dx;iy-=stick.dy}
+ let ix=(keys.d?1:0)-(keys.a?1:0),iy=(keys.w?1:0)-(keys.s?1:0);if(stick){ix+=stick.dx;iy-=stick.dy}if(NET.on&&p.hp<=0){ix=0;iy=0;pend.atk=pend.roll=pend.ctr=pend.lg=pend.pot=0}
  const il=Math.hypot(ix,iy);if(il>1){ix/=il;iy/=il}
  const fx=Math.cos(cy),fz=Math.sin(cy),rx=-fz,rz=fx,mx=fx*iy+rx*ix,mz=fz*iy+rz*ix,ml=Math.hypot(mx,mz);
- p.inv-=dt;m.fl-=dt;m.stun-=dt;p.cbt-=dt;if(p.cbt<=0)p.cb=0;if(p.cs>0){p.cs-=dt;if(p.cs<=0)p.cc=.7}if(p.iw>0){p.iw-=dt;if(p.iw<=0&&p.cs>0){p.cs=0;p.cc=.7}}p.cc-=dt;p.sh=clamp(p.sh+(p.cs>0?1:-1)*dt*4.5,0,1);p.stk-=dt;if(p.psn>0){p.psn-=dt;p.hp-=2.5*dt;if(p.hp<=0)end("lose")}
+ p.inv-=dt;m.fl-=dt;m.stun-=dt;p.cbt-=dt;if(p.cbt<=0)p.cb=0;if(p.cs>0){p.cs-=dt;if(p.cs<=0)p.cc=.7}if(p.iw>0){p.iw-=dt;if(p.iw<=0&&p.cs>0){p.cs=0;p.cc=.7}}p.cc-=dt;p.sh=clamp(p.sh+(p.cs>0?1:-1)*dt*4.5,0,1);p.stk-=dt;if(p.psn>0){p.psn-=dt;p.hp-=2.5*dt;if(p.hp<=0){if(NET.on){p.hp=0;p.psn=0}else end("lose")}}
  if(p.dash>0||p.lg>0||p.jp>0){pend.atk=0;pend.roll=0;pend.ctr=0;pend.lg=0}
  if(pend.pot){pend.pot=0;if(p.pot>0&&p.hp<100){p.pot--;p.hp=Math.min(100,p.hp+45);p.psn=0;$("bp").textContent="回復薬 ×"+p.pot}}
  if(pend.ctr){pend.ctr=0;if(p.cs<=0&&p.cc<=0&&p.roll<=0&&p.atk<=0&&p.lg<=0&&p.jp<=0&&p.lgr<=0&&p.st>=15){p.st-=15;p.cs=4}else if(p.cs>0&&p.sh>.7&&p.iw<=0)p.iw=.4}
@@ -267,12 +267,12 @@ function update(dt){
  if(p.dash>0){p.dash-=dt;p.x+=p.dx*45*dt;p.z+=p.dz*45*dt;p.stk=.35;if(dist(p,m)<m.r+1.6||p.dash<=0){p.dash=0;iai()}}
  else if(p.jp>0){p.jt+=dt;const T=.8,pr=Math.min(1,p.jt/T);p.jy=Math.sin(Math.PI*pr)*3.4;p.x=p.jsx+(p.ltx-p.jsx)*pr;p.z=p.jsz+(p.ltz-p.jsz)*pr;p.a=ang(p,m);
   if(pr>.5&&!p.js){p.js=true;p.atk=.42;p.dur=.42;p.cb=3;p.hit=true;p.inv=Math.max(p.inv,.25);
-   if(dist(p,m)<m.r+4.6){hitM(Math.round(46+Math.random()*16),zone());note("飛翔斬り！");flash2();m.stun=Math.max(m.stun,1);m.fl=.15}else note("空振り…")}
+   if(dist(p,m)<m.r+4.6){hitM(Math.round(46+Math.random()*16),zone());note("飛翔斬り！");flash2();stunM(1,false);m.fl=.15}else note("空振り…")}
   if(pr>=1){p.jp=0;p.jy=0}}
  else if(p.lg>0){p.lg-=dt;p.x+=p.lgx*38*dt;p.z+=p.lgz*38*dt;p.stk=.3;
   if(!p.lghit&&m.y<2.5&&dist(p,m)<m.r+1.3){p.lghit=true;p.lg=0;p.jp=1;p.jt=0;p.js=false;p.jsx=p.x;p.jsz=p.z;const a2=ang(p,m);p.a=a2;
    p.ltx=m.x+Math.cos(a2)*(m.r+2);p.ltz=m.z+Math.sin(a2)*(m.r+2);const ld=Math.hypot(p.ltx,p.ltz);if(ld>R-1){p.ltx*=(R-1)/ld;p.ltz*=(R-1)/ld}
-   m.stun=Math.max(m.stun,1.3);m.atk=null;m.ti=Math.max(m.ti,1);m.fl=.18;flash2()}
+   stunM(1.3,true,1);m.fl=.18;flash2()}
   else if(p.lg<=0){p.lgr=.3;note("空振り…")}}
  else if(p.lgr>0){p.lgr-=dt}
  else if(p.roll>0){p.roll-=dt;p.x+=p.rx*12.5*dt;p.z+=p.rz*12.5*dt}
@@ -280,14 +280,19 @@ function update(dt){
  const dd=dist(p,{x:0,z:0});if(dd>R-1){p.x*=(R-1)/dd;p.z*=(R-1)/dd}
  const pd=dist(p,m);if(pd<m.r+p.r&&p.roll<=0&&m.y<2&&p.lg<=0&&p.jp<=0){const a=ang(m,p);p.x=m.x+Math.cos(a)*(m.r+p.r);p.z=m.z+Math.sin(a)*(m.r+p.r)}
  if(p.atk>0){p.atk-=dt;if(!p.hit&&p.atk<p.dur*.55){p.hit=true;if(m.y<2&&dist(p,m)<m.r+3.9&&adiff(p.a,ang(p,m))<1.2)hitM(Math.round([13,15,26][p.cb-1]+Math.random()*5),zone())}}
- if(m.y>0&&!(m.atk&&m.atk.type==="air"))m.y=Math.max(0,m.y-25*dt);
- if(!(m.atk&&m.atk.type==="somer"))m.fz=0;
- if(m.stun>0){}else if(!m.atk){
-  m.a=ang(m,p);const d=dist(m,p);
-  if(d>m.r+1.4){const sp=(rage?1.35:1)*m.D.spd*(m.pt.L.br?.7:1);m.x+=Math.cos(m.a)*sp*dt;m.z+=Math.sin(m.a)*sp*dt}
-  m.ti-=dt;if(m.ti<=0)pickAtk(d,rage);
- }else runAtk(dt,rage);
-  updBalls(dt);updFx(dt);
+ if(NET.on&&!NET.host)cTick(dt);
+ else{
+  if(m.y>0&&!(m.atk&&m.atk.type==="air"))m.y=Math.max(0,m.y-25*dt);
+  if(!(m.atk&&m.atk.type==="somer"))m.fz=0;
+  if(m.stun>0){}else if(!m.atk){
+   const tg=nearT();m.a=ang(m,tg);const d=dist(m,tg);
+   if(d>m.r+1.4){const sp=(rage?1.35:1)*m.D.spd*(m.pt.L.br?.7:1);m.x+=Math.cos(m.a)*sp*dt;m.z+=Math.sin(m.a)*sp*dt}
+   m.ti-=dt;if(m.ti<=0)pickAtk(d,rage);
+  }else runAtk(dt,rage);
+  updBalls(dt);
+  if(NET.on&&TG().length===0)end("lose");
+ }
+ updFx(dt);
  }
 // ---- 飛竜の技 ----
 // ---- 炎のブレス（火球コア＋尾の火花＋着弾閃光＋火の動的光源） ----
@@ -302,11 +307,11 @@ function shoot(m,aim,dmg){const k=m.D.sc,g=new T.Group(),cm=new T.SpriteMaterial
  const core=new T.Sprite(cm),halo=new T.Sprite(hm);core.scale.setScalar(1);halo.scale.setScalar(2.4);g.add(core,halo);
  const li=new T.PointLight(0xff8a30,1.6,15);g.add(li);
  const x=m.x+Math.cos(aim)*3.8*k,z=m.z+Math.sin(aim)*3.8*k,y=2.2+m.y*.7;g.position.set(x,y,z);sc.add(g);balls.push({g,core,halo,li,x,z,y,vx:Math.cos(aim)*13,vz:Math.sin(aim)*13,l:2.6,age:0,dmg})}
-function updBalls(dt){const p=S.p;for(let i=balls.length-1;i>=0;i--){const b=balls[i];b.x+=b.vx*dt;b.z+=b.vz*dt;b.l-=dt;b.age+=dt;b.y=Math.max(1.1,b.y-10*dt);b.g.position.set(b.x,b.y,b.z);
+function updBalls(dt){const TL=TG();for(let i=balls.length-1;i>=0;i--){const b=balls[i];b.x+=b.vx*dt;b.z+=b.vz*dt;b.l-=dt;b.age+=dt;b.y=Math.max(1.1,b.y-10*dt);b.g.position.set(b.x,b.y,b.z);
  const fl=1+Math.sin(b.age*26)*.16+Math.random()*.1;b.core.scale.setScalar(fl);b.halo.scale.setScalar(2.4*fl);b.li.intensity=1.3+Math.random()*.9;
  for(let j=0;j<2;j++)spawnSpark(b.x,b.y,b.z,false);
  let dead=b.l<=0||Math.hypot(b.x,b.z)>R+3;
- if(!dead&&b.y<2.3&&Math.hypot(b.x-p.x,b.z-p.z)<.95&&p.inv<=0){hurt(b.dmg,true);dead=true}
+ if(!dead&&b.y<2.3)for(const q of TL){if(Math.hypot(b.x-q.x,b.z-q.z)<.95&&!q.iv){dmgT(q,b.dmg,true);dead=true;break}}
  if(dead){for(let j=0;j<5;j++)spawnSpark(b.x,b.y,b.z,true);sc.remove(b.g);balls.splice(i,1)}}}
 function pickAtk(d,rage){const m=S.m,D=m.D;
  const near=["bite","bite","somer","sweep","fire"],far=["fire","fire3","air","charge","charge"];
@@ -314,23 +319,24 @@ function pickAtk(d,rage){const m=S.m,D=m.D;
  const pool=d<7*D.sc?near:far,type=pool[Math.floor(Math.random()*pool.length)];
  const k=(rage?.75:1)*D.k,t0=({bite:.85,somer:1,sweep:1,fire:.9,fire3:1.1,charge:1.15,air:1})[type]*k;
  m.atk={type,ph:"tele",t:t0,t0,a:m.a,done:false,rec:rage?.6:.95,n:0}}
-function runAtk(dt,rage){const m=S.m,p=S.p,a=m.atk;a.t-=dt;
+function runAtk(dt,rage){const m=S.m,a=m.atk,TL=TG(),tg=nearT();a.t-=dt;
+ const hitAll=(cond,d,ps)=>{a.dn=a.dn||{};for(const q of TL)if(!a.dn[q.id]&&cond(q)){a.dn[q.id]=1;dmgT(q,d,false,ps)}};
  if(a.type==="air"){
   if(a.ph==="tele"){m.y=6*(1-clamp(a.t/a.t0,0,1));if(a.t<=0){a.ph="air";a.t=.4;a.n=3}}
-  else if(a.ph==="air"){m.a=ang(m,p);if(a.t<=0){shoot(m,m.a,22);a.n--;a.t=.5;if(a.n<=0){a.ph="mark";a.t=rage?.65:.85;a.tx=p.x;a.tz=p.z}}}
+  else if(a.ph==="air"){m.a=ang(m,tg);if(a.t<=0){shoot(m,m.a,22);a.n--;a.t=.5;if(a.n<=0){a.ph="mark";a.t=rage?.65:.85;a.tx=tg.x;a.tz=tg.z}}}
   else if(a.ph==="mark"){const d=Math.hypot(a.tx-m.x,a.tz-m.z);if(d>.3){const st=Math.min(d,14*dt);m.x+=(a.tx-m.x)/d*st;m.z+=(a.tz-m.z)/d*st}m.a=Math.atan2(a.tz-m.z,a.tx-m.x)||m.a;if(a.t<=0){a.ph="dive";a.t=.22}}
-  else if(a.ph==="dive"){m.y=6*clamp(a.t/.22,0,1);if(a.t<=0){m.y=0;if(Math.hypot(a.tx-p.x,a.tz-p.z)<4.2)hurt(30);a.ph="rec";a.t=1.3;note("急降下！")}}
+  else if(a.ph==="dive"){m.y=6*clamp(a.t/.22,0,1);if(a.t<=0){m.y=0;hitAll(q=>Math.hypot(a.tx-q.x,a.tz-q.z)<4.2,30);a.ph="rec";a.t=1.3;note("急降下！")}}
   else if(a.ph==="rec"&&a.t<=0){m.atk=null;m.ti=rage?.5:1}
   return}
  if(a.ph==="tele"&&a.t<=0){a.ph="do";a.t=a.t0=({bite:.28,somer:.5,sweep:.3,fire:.12,fire3:.12,charge:.5})[a.type];a.sx=m.x;a.sz=m.z;
-  const aim=ang(m,p);if(a.type==="fire")shoot(m,aim,24);if(a.type==="fire3")[-.35,0,.35].forEach(o=>shoot(m,aim+o,18))}
+  const aim=ang(m,tg);if(a.type==="fire")shoot(m,aim,24);if(a.type==="fire3")[-.35,0,.35].forEach(o=>shoot(m,aim+o,18))}
  else if(a.ph==="do"){
   const ca=Math.cos(a.a),sa=Math.sin(a.a);
-  if(a.type==="charge"){const nx=m.x+ca*16*dt,nz=m.z+sa*16*dt;if(Math.hypot(nx,nz)<R-2){m.x=nx;m.z=nz}if(!a.done&&dist(m,p)<m.r+p.r+.3){a.done=true;hurt(28)}}
-  if(a.type==="bite"){m.x+=ca*11*dt;m.z+=sa*11*dt;if(!a.done&&dist(m,p)<m.r+p.r+1.4&&adiff(a.a,ang(m,p))<1){a.done=true;hurt(18)}}
-  if(a.type==="sweep"&&!a.done&&1-a.t/a.t0>.35){a.done=true;if(dist(m,p)<m.r+(m.pt.T.br?3:4.5))hurt(22)}
+  if(a.type==="charge"){const nx=m.x+ca*16*dt,nz=m.z+sa*16*dt;if(Math.hypot(nx,nz)<R-2){m.x=nx;m.z=nz}hitAll(q=>dist(m,q)<m.r+q.r+.3,28)}
+  if(a.type==="bite"){m.x+=ca*11*dt;m.z+=sa*11*dt;hitAll(q=>dist(m,q)<m.r+q.r+1.4&&adiff(a.a,ang(m,q))<1,18)}
+  if(a.type==="sweep"&&!a.done&&1-a.t/a.t0>.35){a.done=true;hitAll(q=>dist(m,q)<m.r+(m.pt.T.br?3:4.5),22)}
   if(a.type==="somer"){const pr=1-a.t/a.t0,nx=m.x-ca*12*dt,nz=m.z-sa*12*dt;if(Math.hypot(nx,nz)<R-2){m.x=nx;m.z=nz}m.y=3.2*Math.sin(Math.PI*pr);m.fz=pr*6.283;
-   const o={x:a.sx,z:a.sz};if(!a.done&&pr>.35&&dist(o,p)<m.r+8&&adiff(a.a,ang(o,p))<.9){a.done=true;const h0=p.hp;hurt(24);if(p.hp<h0&&!m.pt.T.br){p.psn=6;note("毒！")}}}
+   const o={x:a.sx,z:a.sz};if(pr>.35)hitAll(q=>dist(o,q)<m.r+8&&adiff(a.a,ang(o,q))<.9,24,!m.pt.T.br)}
   if(a.t<=0){a.ph="rec";a.t=a.rec;m.y=0;m.fz=0}
  }else if(a.ph==="rec"&&a.t<=0){m.atk=null;m.ti=rage?.5:1}
 }
@@ -359,18 +365,107 @@ function render(time){
  {const ep=embers.geometry.attributes.position;for(let i=0;i<emberN;i++){let y=ep.getY(i)+eVel[i]*.016;if(y>9)y=.4;ep.setY(i,y);ep.setX(i,ep.getX(i)+Math.sin(time/1000+i*1.7)*.004)}ep.needsUpdate=true}
  $("mb").style.width=(m.hp/m.max*100)+"%";$("hb").style.width=clamp(p.hp,0,100)+"%";$("sb").style.width=p.st+"%";$("bc").textContent=p.cs>0?"居合":"見切り";$("bl").style.opacity=p.lgok?1:.35;$("bl").textContent=p.lgok?"飛翔斬!":"飛翔斬";$("hb").style.background=p.psn>0?"#9b59d0":"var(--grn)";$("tm").textContent=Math.max(0,Math.ceil(S.t))+" 秒";
  $("mn").textContent=m.D.n+(rage?"（怒り）":"");["H","T","L"].forEach(k=>{$("p"+k).style.width=Math.max(0,m.pt[k].hp)/m.pt[k].mx*100+"%";$("p"+k).style.opacity=m.pt[k].br?.3:1});
- if(remoteData){remote.position.set(remoteData.x,remoteData.jy||0,remoteData.z);remote.rotation.y=-remoteData.a;remote.visible=true}
- const now=performance.now();if(conn&&conn.open&&S&&S.p&&now-lastNetSend>80){lastNetSend=now;try{conn.send({type:"state",x:S.p.x,z:S.p.z,a:S.p.a,jy:S.p.jy||0,hp:S.p.hp,run:!!S.run})}catch(e){}}
  ren.render(sc,cam);
 }
-function loop(t){const dt=Math.min(.05,(t-last)/1000||0);last=t;if(S.run)update(dt);render(t);requestAnimationFrame(loop)}
+function loop(t){const dt=Math.min(.05,(t-last)/1000||0);last=t;if(S.run){update(dt);netTick(dt)}render(t);netRender(t);requestAnimationFrame(loop)}
 function resize(){ren.setSize(innerWidth,innerHeight);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix()}
 addEventListener("resize",resize);resize();
+// ================= オンライン協力（WebRTC / PeerJS・サーバー不要） =================
+// ★ 回線の相性で直接つながらない場合の「中継サーバー(TURN)」を使う設定。自分用のTURNを取得したら ICE_EXTRA に追記してください。
+// 例: {urls:"turn:example.com:3478",username:"user",credential:"pass"}
+const ICE_EXTRA=[];
+const PEER_OPTS={config:{iceServers:[{urls:"stun:stun.l.google.com:19302"},{urls:"stun:stun1.l.google.com:19302"},{urls:"stun:global.stun.twilio.com:3478"},
+ {urls:"turn:openrelay.metered.ca:80",username:"openrelayproject",credential:"openrelayproject"},
+ {urls:"turn:openrelay.metered.ca:443",username:"openrelayproject",credential:"openrelayproject"},
+ {urls:"turns:openrelay.metered.ca:443?transport=tcp",username:"openrelayproject",credential:"openrelayproject"},...ICE_EXTRA]}};
+const NET={to:0,on:false,host:false,id:0,peer:null,conns:[],hc:null,others:{},nid:1,code:"",acc:0,th:0};
+const AV=[0x4a7fc1,0xc14a4a,0x4ac17f,0xc1a64a],r2=v=>Math.round(v*100)/100;
+function netSend(o){if(NET.host)NET.conns.forEach(c=>c.open&&c.send(o));else if(NET.hc&&NET.hc.open)NET.hc.send(o)}
+function netTo(id,o){const c=NET.conns.find(c=>c.pid===id);if(c&&c.open)c.send(o)}
+function TG(){const L=[],p=S.p;if(p.hp>0)L.push({id:NET.id,x:p.x,z:p.z,r:.5,self:true,get iv(){return p.inv>0||p.jy>1.2}});
+ if(NET.on&&NET.host){const now=performance.now();for(const k in NET.others){const o=NET.others[k];if(o.hp>0&&o.seen>now-4000)L.push({id:+k,x:o.tx,z:o.tz,r:.5,self:false,iv:!!o.iv})}}return L}
+function nearT(){const L=TG();let b=null,bd=1e9;for(const q of L){const d=dist(S.m,q);if(d<bd){bd=d;b=q}}return b||{id:-1,x:S.p.x,z:S.p.z,r:.5,self:true,iv:true}}
+function dmgT(q,d,proj,ps){if(q.self){const p=S.p,h0=p.hp;hurt(d,proj);if(ps&&p.hp<h0){p.psn=6;note("毒！")}}else netTo(q.id,{t:"hurt",d,proj:proj?1:0,ps:ps?1:0})}
+function stunM(s,c,ti){const m=S.m;m.stun=Math.max(m.stun,s);if(c){m.atk=null;m.ti=Math.max(m.ti,ti||1)}if(NET.on&&!NET.host)netSend({t:"stn",s,c:c?1:0,ti:ti||1})}
+function swFi(p){return p.dash>0?1.2-2.4*(1-p.dash/p.d0):p.atk>0?(p.cb===2?-1:1)*(1.3-2.6*(1-p.atk/p.dur)):0}
+function mkMS(){const m=S.m,A=m.atk;return{x:r2(m.x),z:r2(m.z),y:r2(m.y),a:r2(m.a),fz:r2(m.fz),hp:Math.round(m.hp),mx:m.max,st:r2(m.stun),tm:r2(S.t),
+ atk:A?{type:A.type,ph:A.ph,t:r2(A.t),t0:r2(A.t0),a:r2(A.a),tx:r2(A.tx||0),tz:r2(A.tz||0)}:null,
+ pt:["H","T","L"].map(k=>[Math.round(m.pt[k].hp),m.pt[k].br?1:0]),bl:balls.map(b=>[r2(b.x),r2(b.z),r2(b.y)])}}
+function breakVis(zn){if(zn==="H")hornsA.forEach(h=>h.visible=false);if(zn==="T")tail.visible=false;if(zn==="L")legsA.forEach(l=>l.scale.y=.6)}
+function mkBall(x,y,z){const g=new T.Group(),cm=new T.SpriteMaterial({map:fireT,blending:T.AdditiveBlending,depthWrite:false,transparent:true,fog:false}),hm=cm.clone();hm.opacity=.55;
+ const core=new T.Sprite(cm),halo=new T.Sprite(hm);core.scale.setScalar(1);halo.scale.setScalar(2.4);g.add(core,halo);const li=new T.PointLight(0xff8a30,1.6,15);g.add(li);g.position.set(x,y,z);sc.add(g);
+ return{g,core,halo,li,x,z,y,tx:x,tz:z,ty:y,age:0}}
+function applyMS(s){const m=S.m;if(s.hp<m.hp)m.fl=.12;m.tx=s.x;m.tz=s.z;if(m.x===10&&m.z===0&&!m.got){m.x=s.x;m.z=s.z}m.got=1;m.y=s.y;m.a=s.a;m.fz=s.fz;m.hp=s.hp;m.max=s.mx;m.stun=s.st;S.t=s.tm;m.atk=s.atk?Object.assign({},s.atk):null;
+ ["H","T","L"].forEach((k,i)=>{const b=m.pt[k];b.hp=s.pt[i][0];if(s.pt[i][1]&&!b.br){b.br=true;breakVis(k);note("部位破壊！ "+{H:"頭",T:"尻尾",L:"脚"}[k])}});
+ while(balls.length<s.bl.length){const q=s.bl[balls.length];balls.push(mkBall(q[0],q[2],q[1]))}
+ while(balls.length>s.bl.length){const b=balls.pop();for(let j=0;j<5;j++)spawnSpark(b.x,b.y,b.z,true);sc.remove(b.g)}
+ s.bl.forEach((q,i)=>{balls[i].tx=q[0];balls[i].tz=q[1];balls[i].ty=q[2]})}
+function cTick(dt){const m=S.m,k=Math.min(1,dt*14);if(m.tx!==undefined){m.x+=(m.tx-m.x)*k;m.z+=(m.tz-m.z)*k}if(m.atk)m.atk.t-=dt;
+ balls.forEach(b=>{b.x+=(b.tx-b.x)*.5;b.z+=(b.tz-b.z)*.5;b.y+=(b.ty-b.y)*.5;b.age+=dt;b.g.position.set(b.x,b.y,b.z);const fl=1+Math.sin(b.age*26)*.16+Math.random()*.1;b.core.scale.setScalar(fl);b.halo.scale.setScalar(2.4*fl);b.li.intensity=1.3+Math.random()*.9;spawnSpark(b.x,b.y,b.z,false)})}
+function setOther(id,p){const o=NET.others[id]||(NET.others[id]={x:p.x,z:p.z,ca:p.a,hp:100});Object.assign(o,{tx:p.x,tz:p.z,a:p.a,hp:p.hp,fi:p.fi,sh:p.sh,jy:p.jy,rl:p.rl,iv:p.iv,seen:performance.now()})}
+function dropOther(id){const o=NET.others[id];if(o&&o.av)sc.remove(o.av);delete NET.others[id]}
+function hostRecv(c,d){if(!d||typeof d!=="object")return;
+ if(d.t==="ps"&&d.p){setOther(c.pid,d.p);NET.conns.forEach(x=>x!==c&&x.open&&x.send({t:"ps",id:c.pid,p:d.p}))}
+ else if(!S.run)return;
+ else if(d.t==="hit"&&typeof d.d==="number"&&["H","T","L"].includes(d.zn))hitM(clamp(d.d,0,120),d.zn);
+ else if(d.t==="stn"){const m=S.m;m.stun=Math.max(m.stun,clamp(+d.s||0,0,3));if(d.c){m.atk=null;m.ti=Math.max(m.ti,clamp(+d.ti||1,0,3))}}}
+function clientRecv(d){if(!d||typeof d!=="object")return;
+ if(d.t==="welcome"){NET.id=d.id;Q=d.q;if(d.run)start(d.q);netUI()}
+ else if(d.t==="full")netErr({type:"full"});
+ else if(d.t==="start")start(d.q);
+ else if(d.t==="ps"&&d.id!==NET.id&&d.p)setOther(d.id,d.p);
+ else if(d.t==="ms"&&S.run)applyMS(d.m);
+ else if(d.t==="hurt"&&S.run){const p=S.p,h0=p.hp;hurt(+d.d||0,!!d.proj);if(d.ps&&p.hp<h0){p.psn=6;note("毒！")}}
+ else if(d.t==="end"&&S.run)end(d.r);
+ else if(d.t==="left")dropOther(d.id)}
+function hostOpen(){const code=Array.from({length:4},()=>"ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.random()*32|0]).join("");
+ $("mpmsg").textContent="部屋を作っています…";
+ const peer=new Peer("kg3d-"+code,PEER_OPTS);NET.peer=peer;clearTimeout(NET.to);NET.to=setTimeout(()=>{if(!NET.on)netErr({type:"server-error"})},12000);
+ peer.on("open",()=>{clearTimeout(NET.to);NET.on=true;NET.host=true;NET.id=0;NET.code=code;netUI()});
+ peer.on("error",e=>{if(e.type==="unavailable-id"){peer.destroy();hostOpen()}else netErr(e)});
+ peer.on("connection",c=>{
+  c.on("open",()=>{if(NET.conns.length>=3){c.send({t:"full"});setTimeout(()=>c.close(),300);return}
+   c.pid=NET.nid++;NET.conns.push(c);c.send({t:"welcome",id:c.pid,q:Q,run:S.run});netUI()});
+  c.on("data",d=>hostRecv(c,d));
+  c.on("close",()=>{if(!NET.conns.includes(c))return;NET.conns=NET.conns.filter(x=>x!==c);dropOther(c.pid);netSend({t:"left",id:c.pid});netUI()})})}
+function joinRoom(code){code=(code||"").trim().toUpperCase();if(code.length!==4){$("mpmsg").textContent="4文字の部屋コードを入力してください";return}
+ $("mpmsg").textContent="接続中…";const peer=new Peer(undefined,PEER_OPTS);NET.peer=peer;clearTimeout(NET.to);NET.to=setTimeout(()=>{if(!NET.on)netErr({type:"timeout"})},20000);
+ peer.on("open",()=>{const c=peer.connect("kg3d-"+code,{serialization:"json",reliable:true});NET.hc=c;
+  c.on("open",()=>{clearTimeout(NET.to);NET.on=true;NET.host=false;NET.code=code;netUI()});setTimeout(()=>{try{c.peerConnection.addEventListener("iceconnectionstatechange",()=>{if(c.peerConnection.iceConnectionState==="failed"&&!NET.on)netErr({type:"ice-failed"})})}catch(e){}},0);
+  c.on("data",clientRecv);c.on("close",()=>{if(NET.on)netErr({type:"closed"})});c.on("error",e=>netErr(e))});
+ peer.on("error",e=>netErr(e))}
+function netLeave(){clearTimeout(NET.to);try{NET.conns.forEach(c=>c.close());NET.hc&&NET.hc.close();NET.peer&&NET.peer.destroy()}catch(e){}
+ for(const k in NET.others)dropOther(k);NET.on=false;NET.host=false;NET.id=0;NET.peer=null;NET.conns=[];NET.hc=null;NET.nid=1;$("team").innerHTML=""}
+function netErr(e){const t=e&&e.type,M={"peer-unavailable":"その部屋コードは見つかりません","network":"ネットワークに接続できません","server-error":"接続サーバーに繋がりません","browser-incompatible":"このブラウザは非対応です","full":"部屋が満員です","closed":"ホストとの接続が切れました","webrtc":"通信を確立できませんでした","timeout":"接続できませんでした（応答なし）。部屋コードの間違い、ホストが閉じた、または回線の相性の可能性があります","ice-failed":"相手と直接つながりませんでした（回線の相性）。別のWi-Fiに変える、スマホの回線とWi-Fiを入れ替える、などを試してください","disconnected":"接続サーバーとの接続が切れました"};
+ const was=NET.on;netLeave();if(was&&S.run){S.run=false;$("ov").style.display="flex"}netUI();$("mpmsg").textContent=(M[t]||"接続エラー")+"（"+(t||e)+"）"}
+function netUI(){$("mpbtns").style.display=NET.on?"none":"block";$("mpLeave").style.display=NET.on?"block":"none";if(!NET.on)return;
+ $("mpmsg").textContent=NET.host?`部屋コード【${NET.code}】 参加者 ${1+NET.conns.length}人 ／ クエストを選ぶと全員で開始します`:`部屋【${NET.code}】に参加中（あなたは P${NET.id+1}） ／ ホストの開始を待っています`}
+function pick(i){if(NET.on&&!NET.host){$("mpmsg").textContent="ホストが開始するまでお待ちください";return}
+ if(NET.on&&NET.host){netSend({t:"start",q:i});for(const k in NET.others)NET.others[k].hp=100}start(i)}
+$("mpHost").onclick=hostOpen;$("mpJoin").onclick=()=>joinRoom($("mpCode").value);$("mpLeave").onclick=()=>{netLeave();netUI();$("mpmsg").textContent="退出しました"};
+function netTick(dt){if(!NET.on)return;NET.acc+=dt;if(NET.acc<.066)return;NET.acc=0;const p=S.p,ps={x:r2(p.x),z:r2(p.z),a:r2(p.a),hp:Math.round(p.hp),fi:r2(swFi(p)),sh:r2(p.sh),jy:r2(p.jy||0),rl:p.roll>0?1:0,iv:(p.inv>0||p.jy>1.2)?1:0};
+ if(NET.host){netSend({t:"ps",id:0,p:ps});netSend({t:"ms",m:mkMS()})}else netSend({t:"ps",p:ps})}
+function mkAvatar(id){const g=new T.Group(),m=new T.MeshLambertMaterial({color:AV[id%4]});
+ const b=new T.Mesh(new T.CylinderGeometry(.35,.4,1.3,10),m);b.position.y=.75;g.add(b);
+ const h=new T.Mesh(new T.SphereGeometry(.3,10,10),new T.MeshLambertMaterial({color:0xe8c9a0}));h.position.y=1.65;g.add(h);
+ const sg=new T.Group();sg.position.y=1.2;const bl=new T.Mesh(new T.BoxGeometry(3.4,.3,.08),new T.MeshPhongMaterial({color:0xc9d3dc,emissive:0x0a3a38,shininess:80}));bl.position.x=1.9;sg.add(bl);
+ const gr=new T.Mesh(new T.CylinderGeometry(.07,.07,1.2,6),new T.MeshLambertMaterial({color:0x3a2350}));gr.rotation.z=Math.PI/2;gr.position.x=-.45;sg.add(gr);g.add(sg);
+ const c=document.createElement("canvas");c.width=128;c.height=64;const x=c.getContext("2d");x.fillStyle="#fff";x.font="bold 40px sans-serif";x.textAlign="center";x.fillText("P"+(id+1),64,46);
+ const sp=new T.Sprite(new T.SpriteMaterial({map:new T.CanvasTexture(c),transparent:true,depthTest:false}));sp.scale.set(1.6,.8,1);sp.position.y=2.9;g.add(sp);
+ g.userData.sg=sg;sc.add(g);return g}
+function netRender(t){const live=NET.on&&S.run;
+ for(const k in NET.others){const o=NET.others[k];if(!o.av)o.av=mkAvatar(+k);const av=o.av;av.visible=live;if(!live)continue;
+  o.x+=(o.tx-o.x)*.35;o.z+=(o.tz-o.z)*.35;let da=o.a-o.ca;da=Math.atan2(Math.sin(da),Math.cos(da));o.ca+=da*.35;
+  av.position.set(o.x,o.jy||0,o.z);av.rotation.y=-o.ca;av.scale.y=o.rl?.6:1;av.rotation.z=o.hp<=0?1.4:0;
+  const sh=o.sh||0,e=sh*sh*(3-2*sh),sg=av.userData.sg;sg.rotation.y=(o.fi||0)*(1-e)+Math.PI*e;sg.rotation.z=-.5*e;sg.position.set(-.5*e,1.2+.8*e,-.35*e)}
+ if(!live){if(t-NET.th>500){NET.th=t;$("team").innerHTML=""}return}
+ if(t-NET.th>250){NET.th=t;const rows=[[NET.id,S.p.hp]];for(const k in NET.others)rows.push([+k,NET.others[k].hp]);rows.sort((a,b)=>a[0]-b[0]);
+  $("team").innerHTML=rows.map(([id,hp])=>`<div style="display:flex;align-items:center;gap:4px;margin-bottom:3px"><b style="color:#${AV[id%4].toString(16).padStart(6,"0")}">P${id+1}${id===NET.id?"★":""}</b><div class="bar" style="flex:1;height:7px"><i style="width:${clamp(hp,0,100)}%;background:${hp>0?"var(--grn)":"#555"}"></i></div></div>`).join("")}}
 // ---- 入力 ----
 function start(q){reset(q);S.run=true;$("ov").style.display="none"}
-MON.forEach((d,i)=>{const b=document.createElement("button");b.className="q";b.innerHTML=d.n+"<small>"+d.d+"</small>";b.onclick=()=>start(i);$("qs").appendChild(b)});
+MON.forEach((d,i)=>{const b=document.createElement("button");b.className="q";b.innerHTML=d.n+"<small>"+d.d+"</small>";b.onclick=()=>pick(i);$("qs").appendChild(b)});
 addEventListener("keydown",e=>{const k=e.key.length===1?e.key.toLowerCase():e.key;keys[k]=true;
- if(k==="j"||k===" ")pend.atk=1;if(k==="k"||k==="Shift")pend.roll=1;if(k==="l"||k==="e")pend.pot=1;if(k==="u"||k==="c")pend.ctr=1;if(k==="r")pend.lg=1;if(k==="Enter"&&!S.run)start(Q);if(k===" "||k.startsWith("Arrow"))e.preventDefault()});
+ if(k==="j"||k===" ")pend.atk=1;if(k==="k"||k==="Shift")pend.roll=1;if(k==="l"||k==="e")pend.pot=1;if(k==="u"||k==="c")pend.ctr=1;if(k==="r")pend.lg=1;if(k==="Enter"&&!S.run)pick(Q);if(k===" "||k.startsWith("Arrow"))e.preventDefault()});
 addEventListener("keyup",e=>{const k=e.key.length===1?e.key.toLowerCase():e.key;keys[k]=false});
 [["atk","atk"],["br","roll"],["bp","pot"],["bc","ctr"],["bl","lg"]].forEach(([id,k])=>$(id).addEventListener("pointerdown",e=>{e.preventDefault();e.stopPropagation();pend[k]=1}));
 let stick=null,camId=null,lx=0,ly=0;
@@ -385,6 +480,6 @@ const up=e=>{if(stick&&e.pointerId===stick.id){stick=null;$("ring").style.displa
 cv.addEventListener("pointerup",up);cv.addEventListener("pointercancel",up);
 requestAnimationFrame(loop);
 </script>
-<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/vce701823e78c4301a35b7e07294d87301792088814092" integrity="sha512-UKNk8GbxkABxKcXYuLkO16EleLGUkcvJWtpSNmExE0Too3ZaFAxTscNWEc1OdAv5/BikHawapSCaiD2XCmp+Bw==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","spa":2}' crossorigin="anonymous"></script>
+
 </body>
 </html>
